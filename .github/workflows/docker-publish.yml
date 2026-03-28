@@ -1,0 +1,33 @@
+name: Build vLLM Commit 36735fd
+
+on:
+  push:
+    branches: [ "main" ]  # Сборка начнется сразу после пуша в main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          # ЗАМЕНИ 'your-dockerhub-login' на свой логин в Docker Hub ниже:
+          tags: your-dockerhub-login/vllm-custom:36735fd
+          # Кеш ускорит процесс, если сборка прервется
+          cache-from: type=gha
+          cache-to: type=inline
