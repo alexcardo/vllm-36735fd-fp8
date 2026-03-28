@@ -1,13 +1,12 @@
-# .github/workflows/build.yml
 name: Build vLLM Docker Image
 
 on:
-  workflow_dispatch:  # Запуск вручную
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-    timeout-minutes: 360  # 6 часов — хватит для компиляции vLLM
+    timeout-minutes: 360
     
     steps:
       - name: Checkout code
@@ -26,11 +25,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile  # ← Используем ОРИГИНАЛЬНЫЙ Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/vllm-36735fd-fp8:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/vllm-36735fd-fp8:36735fd
           build-args: |
-            PYTORCH_NIGHTLY=1
+            PYTORCH_NIGHTLY=1  # ← Это ЕСТЬ в оригинальном Dockerfile как ARG
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          target: vllm-openai  # ← target из оригинального Dockerfile
